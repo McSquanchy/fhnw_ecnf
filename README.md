@@ -2,4 +2,4 @@
 
 ### Maintainer
 
-[Kevin Buman](mailto:kevin.buman@students.fhnw.ch)
+[Kevin Buman](mailto:kevin.buman@students.fhnw.ch?subject=github_ecnf)
