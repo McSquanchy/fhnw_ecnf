@@ -7,16 +7,20 @@ namespace PersonAdminLib
     public class PersonRegister
     {
         private List<Person> personList;
+        private IEnumerable<Person> Persons { get { return personList; } }
+
+        public delegate void PersonAddedHandler(object source, PersonEventArgs args);
+
+        public event PersonAddedHandler PersonAddedHandlerEvent;
 
         public PersonRegister() 
         {
             personList = new List<Person>();
-            int namesAdded = ReadPersonsFromFile("Resources/Persons.txt");
-            Console.WriteLine($"Added {namesAdded} names to the register.");
         }
 
  
         public int Count { get { return personList.Count; } }
+
 
         public Person this[int index]
         {
@@ -33,9 +37,32 @@ namespace PersonAdminLib
                 {
                     throw new Exception(string.Format("Error Reading files from file %s!", file));
                 }
-                personList.Add(new Person(name[0], name[1]));
+                Add(new Person(name[0], name[1]));
             }
             return lines.Length;
+        }
+
+        public void Sort(Comparison<Person> comparison)
+        {
+            personList.Sort(comparison);
+        }
+
+        public void PrintPersons()
+        {
+            foreach (var p in Persons)
+                Console.WriteLine($"{p.Surname}, {p.Firstname}");
+        }
+
+        int Add(Person newPerson)
+        {
+            personList.Add(newPerson);
+            PersonAddedHandlerEvent?.Invoke(this, new PersonEventArgs(newPerson));
+            return personList.Count;
+        }
+
+        public Person FindPerson(Predicate<Person> match)
+        {
+            return personList.Find(match);
         }
     }
 }

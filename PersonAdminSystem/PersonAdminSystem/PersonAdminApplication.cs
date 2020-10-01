@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using PersonAdminLib;
 
 namespace PersonAdminSystem
@@ -7,18 +8,43 @@ namespace PersonAdminSystem
     {
         static void Main(string[] args)
         {
-
-            //Person p1 = new Person("Hans", "Meier");
-            //Person p2 = new Person("Fritz", "Loser");
-            //Console.WriteLine($"Person 1: {p1.Firstname} {p1.Surname}");
-            //Console.WriteLine($"Person 2: {p2.Firstname} {p2.Surname}");
             var personRegister = new PersonRegister();
+            personRegister.PersonAddedHandlerEvent += ConsoleHandler;
+            personRegister.PersonAddedHandlerEvent += PrintHandler;
+            personRegister.ReadPersonsFromFile("Resources/Persons.txt");
+            personRegister.Sort(CompareBySurname);
+            personRegister.Sort(CompareByFirstname);
+            personRegister.PrintPersons();
 
-            Console.WriteLine("Person: {0} {1}",
-                personRegister[personRegister.Count - 1].Firstname,
-                personRegister[personRegister.Count - 1].Surname);
-            Console.WriteLine($"Person: {personRegister[0].Firstname} {personRegister[0].Surname}");
+            Console.WriteLine("First Match:");
+            Person p = personRegister.FindPerson(ContainsA);
+            Console.WriteLine($"{p.Firstname} {p.Surname}");
             Console.ReadKey();
+        }
+
+        static int CompareByFirstname(Person p1, Person p2)
+        {
+            return p1.Firstname.CompareTo(p2.Firstname);
+        }
+
+        static int CompareBySurname(Person p1, Person p2)
+        {
+            return p1.Surname.CompareTo(p2.Surname);
+        }
+
+        static void ConsoleHandler(object source, PersonEventArgs args)
+        {
+            Console.WriteLine($"{args.Person.Surname} - {args.Person.Firstname}");
+        }
+
+        static void PrintHandler(object source, PersonEventArgs args)
+        {
+            File.AppendAllLines(@"C:\temp\logfile.txt", new[] {$"{DateTime.Now:dd-MM-yyyy HH:mm:ss} | {args.Person.Surname}, {args.Person.Firstname}"});
+        }
+
+        static bool ContainsA(Person p)
+        {
+            return p.Firstname.Contains("a") && p.Surname.Contains("a");
         }
     }
 }

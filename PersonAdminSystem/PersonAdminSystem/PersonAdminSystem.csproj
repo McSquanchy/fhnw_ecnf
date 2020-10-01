@@ -9,4 +9,10 @@
     <ProjectReference Include="..\PersonAdminLib\PersonAdminLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\Persons.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
